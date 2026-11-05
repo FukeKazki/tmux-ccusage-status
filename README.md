@@ -12,7 +12,7 @@ $1.76 37%
 ## Requirements
 
 - [tmux](https://github.com/tmux/tmux) >= 1.9
-- [ccusage](https://github.com/ryoppippi/ccusage) available on `$PATH`
+- [Node.js](https://nodejs.org/) with `npx` available on `$PATH` — [ccusage](https://github.com/ryoppippi/ccusage) is run via `npx ccusage@latest`, so no global install is needed
 - [jq](https://jqlang.org/)
 
 ## Installation
@@ -53,7 +53,7 @@ The plugin rewrites this placeholder into a `#()` shell command at load time, so
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `@ccusage_status_cache_ttl` | `60` | Seconds to cache ccusage output. `ccusage` spawns a Node process, so a short-lived cache keeps a low `status-interval` from hammering it. |
+| `@ccusage_status_cache_ttl` | `60` | Seconds to cache ccusage output. `ccusage` spawns a Node process via `npx`, so a short-lived cache keeps a low `status-interval` from hammering it. |
 
 ```tmux
 set -g @ccusage_status_cache_ttl 30
@@ -61,7 +61,7 @@ set -g @ccusage_status_cache_ttl 30
 
 ## Notes
 
-- If `ccusage` isn't found on `$PATH` (common when tmux's process environment is trimmed down, e.g. via `set-environment -g PATH`), the status shows `ccusage:N/A`. Make sure the script's resolved `$PATH` includes wherever `ccusage` actually lives (mise/asdf/nvm shims, npm global bin, etc.) — see `scripts/status.sh`.
+- If `npx` isn't found on `$PATH` (common when tmux's process environment is trimmed down, e.g. via `set-environment -g PATH`), the status shows `ccusage:N/A`. Make sure the script's resolved `$PATH` includes wherever `npx` actually lives (mise/asdf/nvm shims, Homebrew, etc.) — see `scripts/status.sh`.
 - The block-usage percentage is omitted when there's no active 5-hour block.
 
 ## License

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Prints "$<today's cost> <active 5h block token usage>%" for use in tmux status line.
-# Requires: ccusage (https://github.com/ryoppippi/ccusage), jq
+# Requires: npx (Node.js) to run ccusage (https://github.com/ryoppippi/ccusage), jq
 
 set -u
 
@@ -22,10 +22,14 @@ if [ -f "$cache_file" ]; then
   fi
 fi
 
-if ! command -v ccusage >/dev/null 2>&1; then
+if ! command -v npx >/dev/null 2>&1; then
   echo "ccusage:N/A"
   exit 0
 fi
+
+ccusage() {
+  npx -y ccusage@latest "$@"
+}
 
 today=$(date +%Y-%m-%d)
 
