@@ -37,7 +37,9 @@ daily_cost=$(ccusage daily -j --since "$today" --until "$today" 2>/dev/null \
   | jq -r '[.daily[]?.totalCost] | add // 0')
 
 block_percent=$(ccusage blocks -j -t max 2>/dev/null \
-  | jq -r '[.blocks[] | select(.isActive == true)][0].tokenLimitStatus.percentUsed // empty')
+  | jq -r '[.blocks[] | select(.isActive == true)][0]
+           | select(.tokenLimitStatus.limit > 0)
+           | .totalTokens / .tokenLimitStatus.limit * 100')
 
 cost_fmt=$(printf '$%.2f' "${daily_cost:-0}")
 
