@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Prints "$<today's cost> <active 5h block token usage>%" for use in tmux status line.
-# Requires: ccusage (https://github.com/ryoppippi/ccusage), jq
+# Requires: npx (Node.js) to run ccusage (https://github.com/ryoppippi/ccusage), jq
 
 set -u
 
@@ -22,10 +22,14 @@ if [ -f "$cache_file" ]; then
   fi
 fi
 
-if ! command -v ccusage >/dev/null 2>&1; then
+if ! command -v npx >/dev/null 2>&1; then
   echo "ccusage:N/A"
   exit 0
 fi
+
+ccusage() {
+  npx -y ccusage@latest "$@"
+}
 
 today=$(date +%Y-%m-%d)
 
@@ -33,7 +37,9 @@ daily_cost=$(ccusage daily -j --since "$today" --until "$today" 2>/dev/null \
   | jq -r '[.daily[]?.totalCost] | add // 0')
 
 block_percent=$(ccusage blocks -j -t max 2>/dev/null \
-  | jq -r '[.blocks[] | select(.isActive == true)][0].tokenLimitStatus.percentUsed // empty')
+  | jq -r '[.blocks[] | select(.isActive == true)][0]
+           | select(.tokenLimitStatus.limit > 0)
+           | .totalTokens / .tokenLimitStatus.limit * 100')
 
 cost_fmt=$(printf '$%.2f' "${daily_cost:-0}")
 
